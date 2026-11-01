@@ -1,3 +1,4 @@
+#include "core/wifi/webInterface.h"
 #pragma once
 #include <WiFi.h>
 #include <Preferences.h>
