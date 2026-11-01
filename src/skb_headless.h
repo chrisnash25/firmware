@@ -1,9 +1,8 @@
-#include "core/wifi/webInterface.h"
+void startWebUi(bool mode_ap);
 #pragma once
 #include <WiFi.h>
 #include <Preferences.h>
 #include <esp_system.h>
-#include "core/wifi/webInterface.h"
 
 // On first boot a random AP password is generated and stored in NVS.
 // Read it via USB serial (115200 baud). Do not publish serial logs.
