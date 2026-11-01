@@ -398,6 +398,11 @@ void configureWebServer() {
     DefaultHeaders::Instance().addHeader("Access-Control-Allow-Origin", "*");
     server->onNotFound(notFound);
 
+    server->on("/skb", HTTP_GET, [](AsyncWebServerRequest *request) {
+        if (!checkUserWebAuth(request, true)) return;
+        request->send(200, "text/html", R"SKBHTML(<!doctype html><html lang="en"><meta name="viewport" content="width=device-width,initial-scale=1"><title>SKB | Made by Chris Nash</title><style>body{background:#090b10;color:#e7e8ef;font:16px system-ui;margin:0;background-image:radial-gradient(circle at 50% 0%,#263342,#090b10 65%)}main{max-width:650px;margin:40px auto;padding:24px;border:1px solid #66717c;border-radius:20px;background:#10141ce8;box-shadow:0 10px 40px #000}h1{letter-spacing:.18em;text-align:center;font-size:42px;color:#d4dbe2;text-shadow:0 2px 8px #6e8596}small{display:block;text-align:center;color:#a4b7ca}a{display:inline-block;margin:8px;padding:12px 18px;border:1px solid #74899d;border-radius:8px;color:#d8e5ef;text-decoration:none;background:linear-gradient(#313c49,#151d26)}#status{white-space:pre-wrap;overflow-wrap:anywhere;padding:12px;background:#080b10;border-radius:8px}</style><main><h1>SKB</h1><small>MADE BY CHRIS NASH</small><h2>Headless control centre</h2><p>Wi-Fi: SKB-Headless-Pro</p><p>Gateway: 192.168.4.1</p><a href="/">Bruce controls</a><a href="/logout">Sign out</a><h3>System information</h3><pre id="status">Loading...</pre></main><script>fetch('/systeminfo').then(r=>r.text()).then(t=>document.querySelector('#status').textContent=t).catch(()=>document.querySelector('#status').textContent='Unavailable')</script></html>)SKBHTML");
+    });
+
     // Index
     server->on("/", HTTP_GET, [](AsyncWebServerRequest *request) {
         if (checkUserWebAuth(request, true)) {
@@ -747,7 +752,7 @@ void configureWebServer() {
 **********************************************************************/
 void startWebUi(bool mode_ap) {
     bool keepWifiConnected = false;
-    if (!WiFi.isConnected()) {
+    if (!WiFi.isConnected() && !(mode_ap && (WiFi.getMode() & WIFI_MODE_AP))) {
         if (mode_ap) wifiConnectMenu(WIFI_AP);
         else wifiConnectMenu(WIFI_STA);
     } else {

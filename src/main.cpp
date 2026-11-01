@@ -176,6 +176,7 @@ volatile int tftHeight = VECTOR_DISPLAY_DEFAULT_WIDTH;
 #include "core/serialcmds.h"
 #include "core/settings.h"
 #include "core/wifi/webInterface.h"
+#include "skb_headless.h"
 #include "core/wifi/wifi_common.h"
 #include "modules/bjs_interpreter/interpreter.h" // for JavaScript interpreter
 #include "modules/others/audio.h"                // for playAudioFile
@@ -564,6 +565,9 @@ void setup() {
         );
     }
 #endif
+    // SKB headless AP and authenticated web server; does not require screen input.
+    skbStartHeadless();
+
     //  start a task to handle serial commands while the webui is running
     startSerialCommandsHandlerTask(true);
 
