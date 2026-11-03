@@ -17,6 +17,7 @@ portMUX_TYPE skbMenuMux = portMUX_INITIALIZER_UNLOCKED;
 struct SkbMenuSnapshot {
     char title[56];
     char labels[24][48];
+    bool enabled[24];
     uint32_t revision;
     uint8_t count;
     int16_t selected;
@@ -46,6 +47,7 @@ void skbCaptureMenuState(const std::vector<Option> &items, const char *title, in
     next.updatedMs = millis();
     for (int i = 0; i < next.count; ++i) {
         snprintf(next.labels[i], sizeof(next.labels[i]), "%s", items[i].label.c_str());
+        next.enabled[i] = items[i].enabled;
     }
     portENTER_CRITICAL(&skbMenuMux);
     skbMenu = next;
@@ -91,6 +93,11 @@ String skbMenuStateJson() {
     for (int i = 0; i < snap.count; ++i) {
         if (i) json += ',';
         json += "\"" + skbJsonEscape(snap.labels[i]) + "\"";
+    }
+    json += "],\\\"enabled\\\":[";
+    for (int i = 0; i < snap.count; ++i) {
+        if (i) json += ',';
+        json += snap.enabled[i] ? "true" : "false";
     }
     json += "]}";
     return json;
