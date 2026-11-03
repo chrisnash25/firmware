@@ -14,6 +14,6 @@ require("src/skb_headless.h", 'WiFi.softAP("SKB-Headless-Pro"', "skbHeadlessBack
 require("src/core/display.cpp", "skbCaptureMenuState(", "skbSelectMenuItem(", "forceMenuOption = index", "skbSetDeviceActivity(", "SKB PRO")
 require("src/core/display.h", "skbMenuStateJson()", "skbSelectMenuItem(")
 require("src/core/wifi/webInterface.cpp", '"/skb/api/menu"', '"/skb/api/select"', '"/getscreen"', '"/cm"', '"/bruce"', 'request->redirect("/skb")')
-require("src/skb_dashboard.h", '"/skb/api/status"', 'SKB-HEADLESS-V3', '"/skb/api/menu"', '"/skb/api/select"', 'data-nav=', 'src="/bruce"')
+require("src/skb_dashboard.h", '"/skb/api/status"', 'SKB-HEADLESS-V3', "'/skb/api/menu'", "'/skb/api/select'", 'data-nav=', 'src="/bruce"')
 require("src/core/main_menu.cpp", "&wifiMenu", "&bleMenu", "&rfMenu", "&nrf24Menu", "&irMenu", "&fileMenu", "&scriptsMenu", "&configMenu")
 print("PASS SKB integration source checks. Compilation, browser behaviour and hardware still require independent verification.")
