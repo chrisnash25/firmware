@@ -340,7 +340,12 @@ function syncScrolling() {
 }
 
 function renderFileRow(fileList) {
-  $("table.explorer tbody").innerHTML = "";
+  const tbody = $("table.explorer tbody");
+  tbody.innerHTML = "";
+  // ⚡ Bolt Optimization: Batch DOM appends using a DocumentFragment to avoid
+  // repeated layout recalculations / reflows on each file row.
+  const fragment = document.createDocumentFragment();
+
   fileList
     .split("\n")
     .sort((a, b) => {
@@ -407,8 +412,10 @@ function renderFileRow(fileList) {
         e.querySelector(".col-name").setAttribute("title", name);
         e.querySelector(".col-action").classList.add("type-folder");
       }
-      $("table.explorer tbody").appendChild(e);
+      fragment.appendChild(e);
     });
+
+  tbody.appendChild(fragment);
 }
 
 let sdCardAvailable = false;
