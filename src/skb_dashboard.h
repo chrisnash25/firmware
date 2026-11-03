@@ -27,7 +27,7 @@ p{line-height:1.5}.muted{color:var(--muted);font-size:13px}.status{display:grid;
 .controls{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
 button,.link{appearance:none;display:inline-flex;align-items:center;justify-content:center;min-height:43px;padding:9px 11px;color:#deebf4;text-decoration:none;border-radius:8px;border:1px solid #718393;background:linear-gradient(#394958,#141d26);font:600 13px system-ui;cursor:pointer;box-shadow:inset 0 1px #cbd7e133}
 button:active,.link:active{transform:translateY(1px)}button:focus-visible,.link:focus-visible{outline:2px solid var(--ice)}
-.wide{grid-column:span 3}.links{display:flex;flex-wrap:wrap;gap:8px}.feedback{min-height:21px;color:var(--ice);font-size:12px}
+.wide{grid-column:span 3}.links{display:flex;flex-wrap:wrap;gap:8px}.feedback{min-height:21px;color:var(--ice);font-size:12px}.console{margin-top:16px}.screenframe{width:100%;height:610px;max-height:75vh;border:1px solid #667785;background:#090d12;border-radius:8px}.help{font-size:12px;color:#b3c3d0}.screenframe:focus-visible{outline:2px solid var(--ice)}
 footer{margin-top:19px;text-align:center;color:#8b9aa7;font-size:12px}
 @media(max-width:650px){.grid{grid-template-columns:1fr}.shell{padding:12px}.panel{padding:15px}}
 </style>
@@ -49,13 +49,18 @@ footer{margin-top:19px;text-align:center;color:#8b9aa7;font-size:12px}
 </div></section>
 <section class="panel"><h2>03 / Bruce modules</h2><p class="muted">Wi-Fi · BLE · CC1101 RF · NRF24 · Infrared · Files · Scripts</p>
 <p>Use the Bruce interface for installed and supported modules. External CC1101/NRF24 hardware is required for those radio features.</p>
-<div class="links"><a class="link" href="/bruce">Open Bruce interface</a><a class="link" href="/skb/api/status">Status API</a></div>
+<div class="links"><a class="link" href="#live-console">Open live control console</a><a class="link" href="/bruce" target="_blank" rel="noopener">Full-screen Bruce controls</a><a class="link" href="/skb/api/status">Status API</a></div>
 </section>
 <section class="panel"><h2>04 / Management</h2>
 <p class="muted">Bruce authentication protects this dashboard and its controls. Keep your device and AP password private.</p>
 <div class="links"><a class="link" href="/logout">Sign out</a><button id="refresh">Refresh status</button></div>
 <p class="muted">A restart and advanced Wi-Fi operations may disconnect your phone; they remain available through Bruce's native controls.</p>
 </section></div>
+<section class="panel console" id="live-console"><h2>05 / Live virtual screen &amp; controls</h2>
+<p class="help">This embeds Bruce's real web-based screen emulator inside SKB. It shows Bruce's current menu and provides its existing controls. Use the navigation buttons above or the controls inside the console.</p>
+<iframe class="screenframe" title="Bruce live virtual screen and controls" src="/bruce" loading="eager" referrerpolicy="same-origin"></iframe>
+<p class="help">This view requires firmware screen-logging support. Radio operations that stop the Wi-Fi AP may disconnect your phone and require a reboot before reconnecting.</p>
+</section>
 <footer>SKB HEADLESS PRO · STYLE WITHOUT COMPROMISE</footer></div>
 <script>
 (function(){
