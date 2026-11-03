@@ -268,6 +268,10 @@ void boot_screen() {
     tft.drawCentreString("Bruce", tftWidth / 2, 10, 1);
     tft.setTextSize(FP);
     tft.drawCentreString(BRUCE_VERSION, tftWidth / 2, 25, 1);
+    tft.setTextSize(FP);
+    tft.setTextColor(TFT_MAGENTA, bruceConfig.bgColor);
+    tft.drawCentreString("SKP - Skeptical Penguin", tftWidth / 2, tftHeight - 12, 1);
+    tft.setTextColor(bruceConfig.priColor, bruceConfig.bgColor);
     tft.setTextSize(FM);
     tft.drawCentreString(
         "PREDATORY FIRMWARE", tftWidth / 2, tftHeight + 2, 1
@@ -342,16 +346,17 @@ void boot_screen_anim() {
                 bruceConfig.priColor
             );
         if (!boot_img && (millis() - i > 3400) && (millis() - i) < 3600) tft.fillScreen(bruceConfig.bgColor);
-        if (!boot_img && (millis() - i > 3600))
+        if (!boot_img && (millis() - i > 3600)) {
             tft.drawXBitmap(
-                (tftWidth - 238) / 2,
-                (tftHeight - 133) / 2,
-                bits,
-                bits_width,
-                bits_height,
+                (tftWidth - skp_logo_width) / 2,
+                (tftHeight - skp_logo_height) / 2,
+                skp_logo_bits,
+                skp_logo_width,
+                skp_logo_height,
                 bruceConfig.bgColor,
-                bruceConfig.priColor
+                TFT_MAGENTA
             );
+        }
 #endif
         if (check(AnyKeyPress)) // If any key or M5 key is pressed, it'll jump the boot screen
         {
