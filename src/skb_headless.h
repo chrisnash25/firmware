@@ -1,6 +1,7 @@
+#pragma once
+// SKB headless AP boot shim: preserve Bruce core and its authenticated routes.
 void startWebUi(bool mode_ap);
 extern bool skbHeadlessBackground;
-#pragma once
 #include <WiFi.h>
 #include <Preferences.h>
 #include <esp_system.h>
