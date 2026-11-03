@@ -35,7 +35,7 @@ String skbJsonEscape(const char *s) {
 void skbCaptureMenuState(const std::vector<Option> &items, const char *title, int selected) {
     SkbMenuSnapshot next = {};
     snprintf(next.title, sizeof(next.title), "%s", title ? title : "Menu");
-    next.count = static_cast<uint8_t>(std::min(items.size(), size_t(12)));
+    next.count = static_cast<uint8_t>(items.size() < 12 ? items.size() : 12);
     next.selected = static_cast<int16_t>(selected);
     next.updatedMs = millis();
     for (int i = 0; i < next.count; ++i) {
