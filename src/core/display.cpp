@@ -1028,7 +1028,7 @@ void drawStatusBar() {
         tft.print(timeStr);
     } else {
         setTftDisplay(12, 12, bruceConfig.priColor, 1, bruceConfig.bgColor);
-        tft.print("BRUCE " + String(BRUCE_VERSION));
+        tft.print("SKB PRO");
     }
 
     int iconCount = 0;
@@ -1097,6 +1097,13 @@ void drawMainBorder(bool clear) {
     if (clear) {
         tft.drawPixel(0, 0, 0);
         tft.fillScreen(bruceConfig.bgColor);
+    }
+    // SKB chrome/ice trim on the device itself, not just the browser.
+    if (tftWidth > 24 && tftHeight > 40) {
+        const uint16_t skbMetal = tft.color565(192, 205, 215);
+        const uint16_t skbIce = tft.color565(140, 205, 246);
+        tft.drawRoundRect(3, 3, tftWidth - 6, tftHeight - 6, 5, skbMetal);
+        tft.drawLine(8, 27, tftWidth - 8, 27, skbIce);
     }
     setTftDisplay(12, 12, bruceConfig.priColor, 1, bruceConfig.bgColor);
     tft.setTextDatum(0);
