@@ -80,9 +80,10 @@ if(!Array.isArray(m.items)||m.items.length===0){root.textContent='Menu not avail
 m.items.forEach((name,i)=>{
 const row=document.createElement('button');
 row.type='button';row.className='live-item'+(i===m.selected?' active':'');
-row.textContent=(i===m.selected?'▶ ':'  ')+name;
-row.disabled=selectionBusy;
-row.addEventListener('click',()=>launchItem(i,m.revision,name));
+const enabled=!Array.isArray(m.enabled)||m.enabled[i]!==false;
+row.textContent=(i===m.selected?'▶ ':'  ')+name+(enabled?'':' (unavailable)');
+row.disabled=selectionBusy||!enabled;
+if(enabled)row.addEventListener('click',()=>launchItem(i,m.revision,name));
 root.appendChild(row);
 });
 $('device-action').textContent=m.action?(m.running?'Running: ':'Last action: ')+m.action:'Ready';
