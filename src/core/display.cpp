@@ -856,6 +856,8 @@ Opt_Coord drawOptions(
     bool firstRender
 ) {
     static int last_index = 0;
+    const uint16_t skbSelectedBackground = tft.color565(57, 78, 100);
+    const uint16_t skbSelectedText = tft.color565(222, 236, 247);
 
     Opt_Coord coord;
     int menuSize = options.size();
@@ -907,7 +909,7 @@ Opt_Coord drawOptions(
             // Draw selection highlight bar
             if (i == index) {
                 tft.fillRoundRect(
-                    tftWidth * 0.10 + 2, cursorY + 2, tftWidth * 0.8 - 4, FM * LH + 2, 3, bruceConfig.priColor
+                    tftWidth * 0.10 + 2, cursorY + 2, tftWidth * 0.8 - 4, FM * LH + 2, 3, skbSelectedBackground
                 );
             }
 
@@ -928,7 +930,7 @@ Opt_Coord drawOptions(
             tft.setCursor(tftWidth * 0.10 + 5, tft.getCursorY() + 4);
 
             // Draw text with appropriate colors for selection
-            if (i == index) { tft.setTextColor(bgcolor, bruceConfig.priColor); }
+            if (i == index) { tft.setTextColor(skbSelectedText, skbSelectedBackground); }
             tft.println(text.substring(0, (tftWidth * 0.8 - 10) / (LW * FM) - 1));
 
             // Reset text color for next item
