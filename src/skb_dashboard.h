@@ -104,7 +104,7 @@ finally{selectionBusy=false;}
 }
 async function status(){
 try{const r=await fetch('/skb/api/status',{credentials:'same-origin',cache:'no-store'});if(!r.ok)throw Error('HTTP '+r.status);
-const d=await r.json();$('conn').textContent='ONLINE';$('uptime').textContent=Math.floor(d.uptime_ms/60000)+' min';$('heap').textContent=Math.round(d.free_heap/1024)+' KB';$('clients').textContent=String(d.ap_clients);say('Connected to SKB firmware');}
+const d=await r.json();$('conn').textContent=d.build||'ONLINE';$('uptime').textContent=Math.floor(d.uptime_ms/60000)+' min';$('heap').textContent=Math.round(d.free_heap/1024)+' KB';$('clients').textContent=String(d.ap_clients);say('Connected to SKB firmware');}
 catch(e){$('conn').textContent='OFFLINE';say('Status unavailable: '+e.message);}
 }
 document.querySelectorAll('[data-nav]').forEach(b=>b.addEventListener('click',async()=>{
@@ -126,7 +126,7 @@ inline void registerSkbDashboardRoutes(AsyncWebServer *web, bool (*authorize)(As
         if (!authorize(request, false)) return;
         char body[196];
         snprintf(body, sizeof(body),
-                 "{\"uptime_ms\":%lu,\"free_heap\":%u,\"ap_clients\":%u,\"ssid\":\"SKB-Headless-Pro\"}",
+                 "{\"build\":\"SKB-HEADLESS-V3\",\"uptime_ms\":%lu,\"free_heap\":%u,\"ap_clients\":%u,\"ssid\":\"SKB-Headless-Pro\"}",
                  (unsigned long)millis(), (unsigned)ESP.getFreeHeap(),
                  (unsigned)WiFi.softAPgetStationNum());
         request->send(200, "application/json", body);
