@@ -412,6 +412,29 @@ void configureWebServer() {
         request->send(response);
     });
 
+    // Launch the selected existing Bruce menu action via the real menu loop.
+    server->on("/skb/api/select", HTTP_POST, [](AsyncWebServerRequest *request) {
+        if (!checkUserWebAuth(request)) return;
+        if (!request->hasParam("index", true) || !request->hasParam("revision", true)) {
+            request->send(400, "application/json", "{\"error\":\"index and revision required\"}");
+            return;
+        }
+        String i = request->getParam("index", true)->value();
+        String r = request->getParam("revision", true)->value();
+        if (i.length() == 0 || r.length() == 0 || i.length() > 3 || r.length() > 12 ||
+            i.indexOf('-') >= 0 || r.indexOf('-') >= 0 || i.toInt() < 0 || r.toInt() <= 0) {
+            request->send(400, "application/json", "{\"error\":\"invalid selection\"}");
+            return;
+        }
+        const int index = i.toInt();
+        const uint32_t revision = static_cast<uint32_t>(strtoul(r.c_str(), nullptr, 10));
+        if (!skbSelectMenuItem(index, revision)) {
+            request->send(409, "application/json", "{\"error\":\"menu changed; refresh and try again\"}");
+            return;
+        }
+        request->send(202, "application/json", "{\"queued\":true}");
+    });
+
     // SKB is the homepage. Keep Bruce's complete original UI at /bruce.
     server->on("/", HTTP_GET, [](AsyncWebServerRequest *request) {
         if (!checkUserWebAuth(request, true)) return;
