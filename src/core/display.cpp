@@ -10,6 +10,57 @@
 
 #define MAX_MENU_SIZE (int)(tftHeight / 25)
 
+// SKB live menu telemetry: captured from the actual Bruce menu-render task.
+// Never access Bruce's mutable option vector from the async HTTP task.
+namespace {
+portMUX_TYPE skbMenuMux = portMUX_INITIALIZER_UNLOCKED;
+struct SkbMenuSnapshot {
+    char title[56];
+    char labels[12][48];
+    uint8_t count;
+    int16_t selected;
+    uint32_t updatedMs;
+};
+SkbMenuSnapshot skbMenu = {};
+String skbJsonEscape(const char *s) {
+    String out;
+    for (; *s; ++s) {
+        if (*s == '"' || *s == '\\') out += '\\';
+        if ((unsigned char)*s < 32) out += ' ';
+        else out += *s;
+    }
+    return out;
+}
+}
+void skbCaptureMenuState(const std::vector<Option> &items, const char *title, int selected) {
+    SkbMenuSnapshot next = {};
+    snprintf(next.title, sizeof(next.title), "%s", title ? title : "Menu");
+    next.count = static_cast<uint8_t>(std::min(items.size(), size_t(12)));
+    next.selected = static_cast<int16_t>(selected);
+    next.updatedMs = millis();
+    for (int i = 0; i < next.count; ++i) {
+        snprintf(next.labels[i], sizeof(next.labels[i]), "%s", items[i].label.c_str());
+    }
+    portENTER_CRITICAL(&skbMenuMux);
+    skbMenu = next;
+    portEXIT_CRITICAL(&skbMenuMux);
+}
+String skbMenuStateJson() {
+    SkbMenuSnapshot snap;
+    portENTER_CRITICAL(&skbMenuMux);
+    snap = skbMenu;
+    portEXIT_CRITICAL(&skbMenuMux);
+    String json = "{\"title\":\"" + skbJsonEscape(snap.title) + "\",\"selected\":" + String(snap.selected) +
+                  ",\"updated_ms\":" + String(snap.updatedMs) + ",\"items\":[";
+    for (int i = 0; i < snap.count; ++i) {
+        if (i) json += ',';
+        json += "\"" + skbJsonEscape(snap.labels[i]) + "\"";
+    }
+    json += "]}";
+    return json;
+}
+
+
 // Send the ST7789 into or out of sleep mode
 void panelSleep(bool on) {
 #if defined(ST7789_2_DRIVER) || defined(ST7789_DRIVER)
@@ -583,6 +634,7 @@ int loopOptions(
             // update the hovered
             for (auto &opt : options) opt.hovered = false;
             options[index].hovered = true;
+            skbCaptureMenuState(options, (subText && *subText) ? subText : "Main Menu", index);
 
             bool renderedByLambda = false;
             if (options[index].hover)
