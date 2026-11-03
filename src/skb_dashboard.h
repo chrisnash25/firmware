@@ -49,7 +49,7 @@ footer{margin-top:19px;text-align:center;color:#8b9aa7;font-size:12px}
 </div></section>
 <section class="panel"><h2>03 / Bruce modules</h2><p class="muted">Wi-Fi · BLE · CC1101 RF · NRF24 · Infrared · Files · Scripts</p>
 <p>Use the Bruce interface for installed and supported modules. External CC1101/NRF24 hardware is required for those radio features.</p>
-<div class="links"><a class="link" href="/">Open Bruce interface</a><a class="link" href="/skb/api/status">Status API</a></div>
+<div class="links"><a class="link" href="/bruce">Open Bruce interface</a><a class="link" href="/skb/api/status">Status API</a></div>
 </section>
 <section class="panel"><h2>04 / Management</h2>
 <p class="muted">Bruce authentication protects this dashboard and its controls. Keep your device and AP password private.</p>
