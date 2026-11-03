@@ -16,12 +16,17 @@ namespace {
 portMUX_TYPE skbMenuMux = portMUX_INITIALIZER_UNLOCKED;
 struct SkbMenuSnapshot {
     char title[56];
-    char labels[12][48];
+    char labels[24][48];
+    uint32_t revision;
     uint8_t count;
     int16_t selected;
     uint32_t updatedMs;
 };
 SkbMenuSnapshot skbMenu = {};
+char skbAction[48] = "Ready";
+bool skbActionRunning = false;
+uint32_t skbActivityTime = 0;
+uint32_t skbMenuRevision = 0;
 String skbJsonEscape(const char *s) {
     String out;
     for (; *s; ++s) {
@@ -35,7 +40,8 @@ String skbJsonEscape(const char *s) {
 void skbCaptureMenuState(const std::vector<Option> &items, const char *title, int selected) {
     SkbMenuSnapshot next = {};
     snprintf(next.title, sizeof(next.title), "%s", title ? title : "Menu");
-    next.count = static_cast<uint8_t>(items.size() < 12 ? items.size() : 12);
+    next.count = static_cast<uint8_t>(items.size() < 24 ? items.size() : 24);
+    next.revision = ++skbMenuRevision;
     next.selected = static_cast<int16_t>(selected);
     next.updatedMs = millis();
     for (int i = 0; i < next.count; ++i) {
@@ -45,13 +51,43 @@ void skbCaptureMenuState(const std::vector<Option> &items, const char *title, in
     skbMenu = next;
     portEXIT_CRITICAL(&skbMenuMux);
 }
+void skbSetDeviceActivity(const char *action, bool running) {
+    portENTER_CRITICAL(&skbMenuMux);
+    snprintf(skbAction, sizeof(skbAction), "%s", action ? action : "Ready");
+    skbActionRunning = running;
+    skbActivityTime = millis();
+    portEXIT_CRITICAL(&skbMenuMux);
+}
+
+bool skbSelectMenuItem(int index, uint32_t expectedRevision) {
+    bool accepted = false;
+    portENTER_CRITICAL(&skbMenuMux);
+    // Reject stale button presses: only operate on the currently shown menu.
+    if (expectedRevision != 0 && skbMenu.revision == expectedRevision &&
+        skbMenu.updatedMs != 0 && (uint32_t)(millis() - skbMenu.updatedMs) < 60000 &&
+        index >= 0 && index < skbMenu.count && forceMenuOption == -1) {
+        forceMenuOption = index; // Consumed by Bruce's real menu loop.
+        accepted = true;
+    }
+    portEXIT_CRITICAL(&skbMenuMux);
+    return accepted;
+}
+
 String skbMenuStateJson() {
     SkbMenuSnapshot snap;
     portENTER_CRITICAL(&skbMenuMux);
     snap = skbMenu;
     portEXIT_CRITICAL(&skbMenuMux);
+    String action; bool running; uint32_t actionTime;
+    portENTER_CRITICAL(&skbMenuMux);
+    action = String(skbAction);
+    running = skbActionRunning;
+    actionTime = skbActivityTime;
+    portEXIT_CRITICAL(&skbMenuMux);
     String json = "{\"title\":\"" + skbJsonEscape(snap.title) + "\",\"selected\":" + String(snap.selected) +
-                  ",\"updated_ms\":" + String(snap.updatedMs) + ",\"items\":[";
+                  ",\"updated_ms\":" + String(snap.updatedMs) + ",\"revision\":" + String(snap.revision) +
+                  ",\"action\":\"" + skbJsonEscape(action.c_str()) + "\",\"running\":" + (running ? "true" : "false") +
+                  ",\"action_ms\":" + String(actionTime) + ",\"items\":[";
     for (int i = 0; i < snap.count; ++i) {
         if (i) json += ',';
         json += "\"" + skbJsonEscape(snap.labels[i]) + "\"";
@@ -782,7 +818,9 @@ int loopOptions(
             }
             if (chosen >= options.size() || !options[chosen].enabled) continue;
             Serial.println("Selected: " + String(options[chosen].label));
+            skbSetDeviceActivity(options[chosen].label.c_str(), true);
             options[chosen].operation();
+            skbSetDeviceActivity(options[chosen].label.c_str(), false);
             break;
         }
         // interpreter_start -> running the interpreter
