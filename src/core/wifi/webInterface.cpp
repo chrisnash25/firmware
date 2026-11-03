@@ -403,6 +403,14 @@ void configureWebServer() {
 
     // SKB routes share the authenticated Bruce web service.
     registerSkbDashboardRoutes(server, checkUserWebAuth);
+    // Read-only snapshot produced by the actual menu task; no simulated selections.
+    server->on("/skb/api/menu", HTTP_GET, [](AsyncWebServerRequest *request) {
+        if (!checkUserWebAuth(request)) return;
+        AsyncWebServerResponse *response =
+            request->beginResponse(200, "application/json", skbMenuStateJson());
+        response->addHeader("Cache-Control", "no-store");
+        request->send(response);
+    });
 
     // SKB is the homepage. Keep Bruce's complete original UI at /bruce.
     server->on("/", HTTP_GET, [](AsyncWebServerRequest *request) {
