@@ -1,4 +1,5 @@
 void startWebUi(bool mode_ap);
+extern bool skbHeadlessBackground;
 #pragma once
 #include <WiFi.h>
 #include <Preferences.h>
@@ -31,5 +32,6 @@ inline void skbStartHeadless() {
     Serial.println("[SKB] AP password (USB serial only): " + pass);
     Serial.println("[SKB] Browser: http://192.168.4.1/skb");
     // Existing Bruce web routes remain available, including authentication.
+    skbHeadlessBackground = true;
     startWebUi(true);
 }
