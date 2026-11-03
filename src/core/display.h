@@ -182,6 +182,9 @@ void drawSubmenu(int index, std::vector<Option> &options, const char *title);
 // SKB browser reads a snapshot of the real menu selection (no screen required).
 String skbMenuStateJson();
 void skbCaptureMenuState(const std::vector<Option> &items, const char *title, int selected);
+// Requests direct selection from an authenticated web client using a menu snapshot revision.
+bool skbSelectMenuItem(int index, uint32_t expectedRevision);
+void skbSetDeviceActivity(const char *action, bool running);
 void drawStatusBar();
 void drawMainBorder(bool clear = true);
 void drawMainBorderWithTitle(const String &title, bool clear = true);
