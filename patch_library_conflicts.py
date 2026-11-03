@@ -6,6 +6,17 @@ print("Patching library conflicts with ESP32 core...")
 
 # List of conflicts: (file_pattern, search_pattern, replace_pattern)
 conflicts = [
+    # FastLED: undefine FP macro (font size in board configs) which conflicts with FastLED template parameters
+    (
+        ".pio/libdeps/*/FastLED/src/fl/audio/fft/fft_impl.cpp.hpp",
+        r'#include "fft_impl.h"',
+        '#include "fft_impl.h"\n#ifdef FP\n#undef FP\n#endif'
+    ),
+    (
+        ".pio/libdeps/*/FastLED/src/fl/stl/json.h",
+        r'#pragma once',
+        '#pragma once\n#ifdef FP\n#undef FP\n#endif'
+    ),
     (
         ".pio/libdeps/*/ESP8266SAM/src/render.c",
         r'static void yield\(\)',
