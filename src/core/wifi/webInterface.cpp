@@ -404,11 +404,14 @@ void configureWebServer() {
     // SKB routes share the authenticated Bruce web service.
     registerSkbDashboardRoutes(server, checkUserWebAuth);
 
-    // Index
+    // SKB is the homepage. Keep Bruce's complete original UI at /bruce.
     server->on("/", HTTP_GET, [](AsyncWebServerRequest *request) {
-        if (checkUserWebAuth(request, true)) {
-            serveWebUIFile(request, "index.html", "text/html", true, index_html, index_html_size);
-        }
+        if (!checkUserWebAuth(request, true)) return;
+        request->redirect("/skb");
+    });
+    server->on("/bruce", HTTP_GET, [](AsyncWebServerRequest *request) {
+        if (!checkUserWebAuth(request, true)) return;
+        serveWebUIFile(request, "index.html", "text/html", true, index_html, index_html_size);
     });
 
     // Login
@@ -420,7 +423,7 @@ void configureWebServer() {
             if (username == bruceConfig.webUI.user && password == bruceConfig.webUI.pwd) {
                 String token = generateToken();
                 AsyncWebServerResponse *response = request->beginResponse(302);
-                response->addHeader("Location", "/");
+                response->addHeader("Location", "/skb");
                 response->addHeader("Set-Cookie", "BRUCESESSION=" + token + "; Path=/; HttpOnly");
                 request->send(response);
                 bruceConfig.addWebUISession(token);
