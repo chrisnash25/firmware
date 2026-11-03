@@ -94,7 +94,7 @@ String skbMenuStateJson() {
         if (i) json += ',';
         json += "\"" + skbJsonEscape(snap.labels[i]) + "\"";
     }
-    json += "],\\\"enabled\\\":[";
+    json += "],\"enabled\":[";
     for (int i = 0; i < snap.count; ++i) {
         if (i) json += ',';
         json += snap.enabled[i] ? "true" : "false";
