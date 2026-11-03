@@ -263,16 +263,18 @@ void begin_tft() {
  **  Draw boot screen
  *********************************************************************/
 void boot_screen() {
-    tft.setTextColor(bruceConfig.priColor, bruceConfig.bgColor);
-    tft.setTextSize(FM);
-    tft.drawPixel(0, 0, bruceConfig.bgColor);
-    tft.drawCentreString("Bruce", tftWidth / 2, 10, 1);
-    tft.setTextSize(FP);
-    tft.drawCentreString(BRUCE_VERSION, tftWidth / 2, 25, 1);
-    tft.setTextSize(FM);
-    tft.drawCentreString(
-        "PREDATORY FIRMWARE", tftWidth / 2, tftHeight + 2, 1
-    ); // will draw outside the screen on non touch devices
+    // SKB identity on the physical display; preserve Bruce's firmware backend.
+    const uint16_t metal = tft.color565(207, 219, 228);
+    const uint16_t ice = tft.color565(140, 205, 246);
+    tft.fillScreen(TFT_BLACK);
+    tft.drawRoundRect(4, 4, tftWidth - 8, tftHeight - 8, 7, metal);
+    tft.drawLine(10, 30, tftWidth - 10, 30, ice);
+    tft.setTextColor(metal, TFT_BLACK);
+    tft.drawCentreString("SKB", tftWidth / 2, tftHeight / 2 - 25, 4);
+    tft.setTextColor(ice, TFT_BLACK);
+    tft.drawCentreString("HEADLESS PRO", tftWidth / 2, tftHeight / 2 + 12, 1);
+    tft.setTextColor(metal, TFT_BLACK);
+    tft.drawCentreString("MADE BY CHRIS NASH", tftWidth / 2, tftHeight - 24, 1);
 }
 
 /*********************************************************************
