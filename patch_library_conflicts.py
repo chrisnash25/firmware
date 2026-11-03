@@ -31,6 +31,15 @@ conflicts = [
         r'#include <NimBLEDevice.h>',
         '#include <Arduino.h>\n#include <NimBLEDevice.h>'
     ),
+    # FastLED: Bruce defines -DFP=1 (or pins_arduino.h defines FP 1 for Small Font).
+    # FastLED includes fl/system/arduino.h (which pulls in Arduino.h/command-line defines),
+    # colliding with FastLED's internal `template <typename FP>` and `using FP = fl::fixed_point`.
+    # Undefine FP in FastLED's fl/system/arduino.h so FastLED builds cleanly.
+    (
+        ".pio/libdeps/*/FastLED/src/fl/system/arduino.h",
+        r'// Clean up Arduino macros \(abs, min, max, round, etc\.\)',
+        '#ifdef FP\n#undef FP\n#endif\n// Clean up Arduino macros (abs, min, max, round, etc.)'
+    ),
     (
         ".pio/libdeps/*/ESP Chameleon Ultra/src/chameleonUltra.h",
         r'#include <NimBLEDevice.h>',
