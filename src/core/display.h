@@ -179,6 +179,9 @@ Opt_Coord drawOptions(
 
 void drawSubmenu(int index, std::vector<Option> &options, const char *title);
 
+// SKB browser reads a snapshot of the real menu selection (no screen required).
+String skbMenuStateJson();
+void skbCaptureMenuState(const std::vector<Option> &items, const char *title, int selected);
 void drawStatusBar();
 void drawMainBorder(bool clear = true);
 void drawMainBorderWithTitle(const String &title, bool clear = true);
